@@ -13,18 +13,14 @@ function App() {
       return;
     }
 
-    if (!instagram.trim()) {
-      setMessage('ჯერ Instagram ჩაწერე');
-      return;
-    }
-
     setMessage('Match იძებნება...');
+
     let userId = localStorage.getItem('rame_user_id');
 
-if (!userId) {
-  userId = crypto.randomUUID();
-  localStorage.setItem('rame_user_id', userId);
-}
+    if (!userId) {
+      userId = crypto.randomUUID();
+      localStorage.setItem('rame_user_id', userId);
+    }
 
     try {
       const response = await fetch(
@@ -35,24 +31,31 @@ if (!userId) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-  userId,
-  thought,
-  instagram,
-  visibility: 'similar_only'
-})
+            userId,
+            thought,
+            instagram: instagram.trim(),
+            visibility: 'similar_only'
+          })
         }
       );
 
       const data = await response.json();
 
+      if (!response.ok) {
+        setMessage(data.error || 'დაფიქსირდა შეცდომა');
+        return;
+      }
+
       if (data.matches && data.matches.length > 0) {
-        setMessage(
-          `ნაპოვნია მსგავსი ადამიანი: @${data.matches[0].instagram}`
-        );
+        const match = data.matches[0];
+
+        if (match.instagram) {
+          setMessage(`ნაპოვნია მსგავსი ადამიანი: @${match.instagram}`);
+        } else {
+          setMessage('ნაპოვნია მსგავსი ადამიანი, მაგრამ Instagram არ აქვს მითითებული');
+        }
       } else {
-        setMessage(
-          'ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅'
-        );
+        setMessage('ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅');
       }
     } catch (error) {
       setMessage('დაფიქსირდა შეცდომა');
@@ -77,7 +80,7 @@ if (!userId) {
         />
 
         <input
-          placeholder="შენი Instagram"
+          placeholder="Instagram სურვილისამებრ"
           value={instagram}
           onChange={(e) => setInstagram(e.target.value)}
         />
