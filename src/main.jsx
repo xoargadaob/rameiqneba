@@ -1,46 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-function App() {
-  const [thought, setThought] = useState('');
-  const [instagram, setInstagram] = useState('');
-  const [message, setMessage] = useState('');
-  const [matches, setMatches] = useState([]);
+const API_URL = 'https://rameiqneba.onrender.com/api/thoughts/match';
 
-  async function handleMatch() {
-    if (!thought.trim()) {
+function App() {
+  const [text, setText] = useState('');
+  const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState('');
+  const [commentInputs, setCommentInputs] = useState({});
+
+  async function loadPosts() {
+    try {
+      const response = await fetch(`${API_URL}/api/posts`);
+      const data = await response.json();
+      setPosts(data);
+    } catch (error) {
+      setMessage('Feed ვერ ჩაიტვირთა');
+    }
+  }
+
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  async function createPost() {
+    if (!text.trim()) {
       setMessage('ჯერ აზრი დაწერე');
-      setMatches([]);
       return;
     }
 
-    setMessage('Match იძებნება...');
-    setMatches([]);
-
-    let userId = localStorage.getItem('rame_user_id');
-
-    if (!userId) {
-      userId = crypto.randomUUID();
-      localStorage.setItem('rame_user_id', userId);
-    }
-
     try {
-      const response = await fetch(
-        'https://rameiqneba.onrender.com/api/thoughts/match',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            userId,
-            thought,
-            instagram: instagram.trim(),
-            visibility: 'similar_only'
-          })
-        }
-      );
+      const response = await fetch(`${API_URL}/api/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text })
+      });
 
       const data = await response.json();
 
@@ -49,134 +46,127 @@ function App() {
         return;
       }
 
-      if (data.matches && data.matches.length > 0) {
-        const foundMatches = data.matches.map((item) => ({
-          ...item,
-          percent: Math.round(item.score * 100)
-        }));
-
-        setMatches(foundMatches);
-
-        setMessage(
-          `ნაპოვნია ${foundMatches.length} მსგავსი აზრი`
-        );
-      } else {
-        setMessage(
-          'ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅'
-        );
-      }
+      setText('');
+      setMessage('დაიპოსტა ✅');
+      loadPosts();
     } catch (error) {
       setMessage('დაფიქსირდა შეცდომა');
     }
   }
 
-  function cleanInstagram(username) {
-    return username.replace('@', '').trim();
+  async function likePost(id) {
+    try {
+      await fetch(`${API_URL}/api/posts/${id}/like`, {
+        method: 'POST'
+      });
+
+      loadPosts();
+    } catch (error) {
+      setMessage('Like ვერ დაემატა');
+    }
+  }
+
+  async function addComment(id) {
+    const comment = commentInputs[id];
+
+    if (!comment || !comment.trim()) {
+      return;
+    }
+
+    try {
+      await fetch(`${API_URL}/api/posts/${id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: comment })
+      });
+
+      setCommentInputs({
+        ...commentInputs,
+        [id]: ''
+      });
+
+      loadPosts();
+    } catch (error) {
+      setMessage('კომენტარი ვერ დაემატა');
+    }
   }
 
   return (
     <div className="page">
-      <div className="card">
-        <div className="badge">● რამე იქნება AI</div>
+      <div className="app">
+        <header className="header">
+          <div className="badge">● ანონიმური Feed</div>
 
-        <h1 className="animated-title">
-          რამე იქნება<span className="cursor">|</span>
-        </h1>
+          <h1 className="title">
+            რამე იქნება<span className="cursor">|</span>
+          </h1>
 
-        <p className="subtitle">
-          დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
-        </p>
+          <p className="subtitle">
+            დაპოსტე აზრი. ნახე რას ფიქრობენ სხვები.
+          </p>
+        </header>
 
-        <textarea
-          placeholder="დაწერე შენი აზრი..."
-          value={thought}
-          onChange={(e) => setThought(e.target.value)}
-        />
+        <section className="composer">
+          <textarea
+            placeholder="დაწერე შენი აზრი..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
 
-        <input
-          placeholder="Instagram სურვილისამებრ"
-          value={instagram}
-          onChange={(e) => setInstagram(e.target.value)}
-        />
+          <button onClick={createPost} className="main-btn">
+            დაპოსტე
+          </button>
 
-        <button
-          type="button"
-          className="main-btn"
-          onClick={handleMatch}
-        >
-          ვნახოთ ვინ ფიქრობს შენნაირად
-        </button>
+          {message && <div className="result">{message}</div>}
+        </section>
 
-        {message && (
-          <div className="result">
-            {message}
-          </div>
-        )}
+        <section className="feed">
+          {posts.length === 0 ? (
+            <p className="empty">ჯერ აზრები არ არის.</p>
+          ) : (
+            posts.map((post) => (
+              <article className="post-card" key={post._id}>
+                <p className="post-text">“{post.text}”</p>
 
-        <p className="note">
-          სხვის აზრებს მხოლოდ მაშინ ნახავ,
-          როცა შენც დაწერ.
-        </p>
-      </div>
-
-      {matches.length > 0 && (
-        <div className="matches-overlay">
-          <div className="matches-modal">
-            <div className="matches-header">
-              <h2>მსგავსი აზრები</h2>
-
-              <button
-                className="close-btn"
-                onClick={() => setMatches([])}
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="matches-list">
-              {matches.map((match) => (
-                <div
-                  className="match-card"
-                  key={match._id}
-                >
-                  <div className="match-top">
-                    <span className="match-pill">
-                      {match.percent}% Match
-                    </span>
-
-                    <span className="match-dot"></span>
-                  </div>
-
-                  <p className="match-thought">
-                    “{match.thought}”
-                  </p>
-
-                  {match.instagram ? (
-                    <a
-                      href={`https://instagram.com/${cleanInstagram(
-                        match.instagram
-                      )}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="instagram-link"
-                    >
-                      Instagram-ზე გადასვლა
-                    </a>
-                  ) : (
-                    <p className="no-instagram">
-                      Instagram არ აქვს
-                    </p>
-                  )}
+                <div className="post-actions">
+                  <button onClick={() => likePost(post._id)}>
+                    ❤️ მეც ასე ვფიქრობ · {post.likes}
+                  </button>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+
+                <div className="comments">
+                  {post.comments?.map((comment) => (
+                    <p className="comment" key={comment._id}>
+                      {comment.text}
+                    </p>
+                  ))}
+                </div>
+
+                <div className="comment-box">
+                  <input
+                    placeholder="დააკომენტარე..."
+                    value={commentInputs[post._id] || ''}
+                    onChange={(e) =>
+                      setCommentInputs({
+                        ...commentInputs,
+                        [post._id]: e.target.value
+                      })
+                    }
+                  />
+
+                  <button onClick={() => addComment(post._id)}>
+                    გაგზავნა
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </section>
+      </div>
     </div>
   );
 }
 
-createRoot(document.getElementById('root')).render(
-  <App />
-);
+createRoot(document.getElementById('root')).render(<App />);
