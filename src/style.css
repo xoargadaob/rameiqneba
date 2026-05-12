@@ -48,10 +48,10 @@ body {
 }
 
 .animated-title {
-  font-size: clamp(42px, 12vw, 58px);
-  font-weight: 700;
-  margin: 20px 0 10px;
-  line-height: 0.95;
+  font-size: clamp(38px, 11vw, 56px);
+  font-weight: 900;
+  margin: 18px 0 10px;
+  line-height: 1;
 }
 
 .cursor {
@@ -60,7 +60,8 @@ body {
 }
 
 @keyframes blinkCursor {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
 
@@ -134,6 +135,77 @@ textarea {
   padding: 14px;
   text-align: center;
   font-size: 14px;
+}
+
+.match-card {
+  margin-top: 16px;
+  background: linear-gradient(
+    180deg,
+    #111113,
+    #09090b
+  );
+  border: 1px solid #3f3f46;
+  border-radius: 26px;
+  padding: 16px;
+}
+
+.match-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.match-pill {
+  background: #7c3aed22;
+  border: 1px solid #7c3aed;
+  color: #c4b5fd;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.match-dot {
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #22c55e;
+}
+
+.match-label {
+  color: #a1a1aa;
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.match-thought {
+  color: white;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+.instagram-link {
+  display: block;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    #e879f9,
+    #8b5cf6
+  );
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  padding: 13px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.no-instagram {
+  color: #a1a1aa;
+  font-size: 13px;
+  margin: 0;
 }
 
 .note {
