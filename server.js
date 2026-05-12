@@ -19,7 +19,9 @@ mongoose
   });
 
 const ThoughtSchema = new mongoose.Schema({
+  userId: String,
   thought: String,
+  normalizedThought: String,
   instagram: String,
   visibility: String,
   createdAt: {
@@ -38,23 +40,45 @@ app.get('/', (req, res) => {
 
 app.post('/api/thoughts/match', async (req, res) => {
   try {
-    const { thought, instagram, visibility } = req.body;
+    const {
+      userId,
+      thought,
+      instagram,
+      visibility
+    } = req.body;
 
-    if (!thought || !instagram) {
+    if (!thought) {
       return res.status(400).json({
-        error: 'აზრი და Instagram აუცილებელია'
+        error: 'აზრი აუცილებელია'
+      });
+    }
+
+    const normalizedThought = thought
+      .toLowerCase()
+      .trim();
+
+    const alreadyExists = await Thought.findOne({
+      userId,
+      normalizedThought
+    });
+
+    if (alreadyExists) {
+      return res.status(409).json({
+        error: 'ეს აზრი უკვე დაწერილი გაქვს'
       });
     }
 
     const matches = await Thought.find({
-      thought: {
-        $regex: thought,
+      normalizedThought: {
+        $regex: normalizedThought,
         $options: 'i'
       }
     }).limit(5);
 
     const savedThought = await Thought.create({
+      userId,
       thought,
+      normalizedThought,
       instagram,
       visibility
     });
