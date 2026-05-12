@@ -48,11 +48,12 @@ function App() {
 
       if (data.matches && data.matches.length > 0) {
         const match = data.matches[0];
+        const percent = Math.round(match.score * 100);
 
         if (match.instagram) {
-          setMessage(`ნაპოვნია მსგავსი ადამიანი: @${match.instagram}`);
+          setMessage(`@${match.instagram} • ${percent}% Match`);
         } else {
-          setMessage('ნაპოვნია მსგავსი ადამიანი');
+          setMessage(`ნაპოვნია მსგავსი ადამიანი • ${percent}% Match`);
         }
       } else {
         setMessage('ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅');
@@ -67,12 +68,12 @@ function App() {
       <div className="card">
         <div className="badge">● რამე იქნება AI</div>
 
-         <h1 className="animated-title">
-  რამე იქნება<span className="cursor">|</span>
-</h1>
-        
+        <h1 className="animated-title">
+          რამე იქნება<span className="cursor">|</span>
+        </h1>
+
         <p className="subtitle">
-          დაწერე რას ფიქრობ. იქნებ მარტო არ ხარ.
+          დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
         </p>
 
         <textarea
