@@ -22,7 +22,7 @@ function App() {
 
     try {
       const response = await fetch(
-        'https://rame-iqneba-api.onrender.com/api/thoughts/match',
+        'https://rameiqneba.onrender.com/api/thoughts/match',
         {
           method: 'POST',
           headers: {
