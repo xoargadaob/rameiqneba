@@ -68,10 +68,7 @@ function App() {
         <div className="badge">● რამე იქნება AI</div>
 
         <h1 className="animated-title">
-  <span>რამე იქნება</span>
-  <span>რამე მოხდება</span>
-</h1>
-
+          
         <p className="subtitle">
           დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
         </p>
