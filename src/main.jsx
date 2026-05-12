@@ -12,7 +12,7 @@ function App() {
 
   async function loadPosts() {
     try {
-      const response = await fetch(`${API_URL}/api/posts`);
+      const response = await fetch(`https://rameiqneba.onrender.com}/api/posts`);
       const data = await response.json();
       setPosts(data);
     } catch (error) {
