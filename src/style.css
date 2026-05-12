@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'RameFont';
-  src: url('https://files.catbox.moe/se1a4j.ttf') format('truetype');
+  src: url('https://files.catbox.moe/se1a4j.ttf')
+    format('truetype');
 }
 
 * {
@@ -21,8 +22,16 @@ body {
   justify-content: center;
   padding: 20px;
   background:
-    radial-gradient(circle at top left, #7c3aed66, transparent 35%),
-    radial-gradient(circle at bottom right, #d946ef55, transparent 35%),
+    radial-gradient(
+      circle at top left,
+      #7c3aed66,
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      #d946ef55,
+      transparent 35%
+    ),
     #000;
 }
 
@@ -137,8 +146,55 @@ textarea {
   font-size: 14px;
 }
 
+.matches-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 999;
+}
+
+.matches-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 28px;
+  padding: 18px;
+}
+
+.matches-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.matches-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.matches-list {
+  display: grid;
+  gap: 12px;
+}
+
 .match-card {
-  margin-top: 16px;
   background: linear-gradient(
     180deg,
     #111113,
@@ -171,12 +227,6 @@ textarea {
   background: #22c55e;
   border-radius: 50%;
   box-shadow: 0 0 12px #22c55e;
-}
-
-.match-label {
-  color: #a1a1aa;
-  font-size: 12px;
-  margin: 0 0 8px;
 }
 
 .match-thought {
