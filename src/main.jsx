@@ -67,10 +67,12 @@ function App() {
       <div className="card">
         <div className="badge">● რამე იქნება AI</div>
 
-        <h1 className="animated-title"></h1>
-
+          <h1 className="animated-title">
+  რამე იქნება<span className="cursor">|</span>
+       </h1>
+        
         <p className="subtitle">
-          დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
+          დაწერე რას ფიქრობ. იქნებ მარტო არ ხარ.
         </p>
 
         <textarea
