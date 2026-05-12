@@ -113,57 +113,66 @@ function App() {
           </div>
         )}
 
-        {matches.length > 0 && (
-          <div className="matches-list">
-            {matches.map((match) => (
-              <div
-                className="match-card"
-                key={match._id}
-              >
-                <div className="match-top">
-                  <span className="match-pill">
-                    {match.percent}% Match
-                  </span>
-
-                  <span className="match-dot"></span>
-                </div>
-
-                <p className="match-label">
-                  მსგავსი აზრი
-                </p>
-
-                <p className="match-thought">
-                  “{match.thought}”
-                </p>
-
-                {match.instagram ? (
-                  <a
-                    href={`https://instagram.com/${cleanInstagram(
-                      match.instagram
-                    )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="instagram-link"
-                  >
-                    Instagram-ზე გადასვლა @
-                    {cleanInstagram(match.instagram)}
-                  </a>
-                ) : (
-                  <p className="no-instagram">
-                    ამ ადამიანს Instagram არ აქვს
-                    მითითებული
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
         <p className="note">
           სხვის აზრებს მხოლოდ მაშინ ნახავ,
           როცა შენც დაწერ.
         </p>
       </div>
+
+      {matches.length > 0 && (
+        <div className="matches-overlay">
+          <div className="matches-modal">
+            <div className="matches-header">
+              <h2>მსგავსი აზრები</h2>
+
+              <button
+                className="close-btn"
+                onClick={() => setMatches([])}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="matches-list">
+              {matches.map((match) => (
+                <div
+                  className="match-card"
+                  key={match._id}
+                >
+                  <div className="match-top">
+                    <span className="match-pill">
+                      {match.percent}% Match
+                    </span>
+
+                    <span className="match-dot"></span>
+                  </div>
+
+                  <p className="match-thought">
+                    “{match.thought}”
+                  </p>
+
+                  {match.instagram ? (
+                    <a
+                      href={`https://instagram.com/${cleanInstagram(
+                        match.instagram
+                      )}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="instagram-link"
+                    >
+                      Instagram-ზე გადასვლა
+                    </a>
+                  ) : (
+                    <p className="no-instagram">
+                      Instagram არ აქვს
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
