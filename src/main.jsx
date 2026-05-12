@@ -5,7 +5,6 @@ import './style.css';
 function App() {
   const [thought, setThought] = useState('');
   const [instagram, setInstagram] = useState('');
-  const [privacy, setPrivacy] = useState('public');
   const [message, setMessage] = useState('');
 
   async function handleMatch() {
@@ -23,7 +22,7 @@ function App() {
 
     try {
       const response = await fetch(
-        'https://rameiqneba.onrender.com/api/thoughts/match',
+        'https://rame-iqneba-api.onrender.com/api/thoughts/match',
         {
           method: 'POST',
           headers: {
@@ -32,7 +31,7 @@ function App() {
           body: JSON.stringify({
             thought,
             instagram,
-            visibility: privacy
+            visibility: 'similar_only'
           })
         }
       );
@@ -61,7 +60,7 @@ function App() {
         <h1>რამე იქნება</h1>
 
         <p className="subtitle">
-          დაწერე აზრი და იპოვე მსგავსი ადამიანი
+          დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
         </p>
 
         <textarea
@@ -71,69 +70,17 @@ function App() {
         />
 
         <input
-          placeholder="Instagram @username"
+          placeholder="შენი Instagram"
           value={instagram}
           onChange={(e) => setInstagram(e.target.value)}
         />
-
-        <div className="privacy-wrapper">
-          <p className="privacy-title">
-            🔒 კონფიდენციალურობა
-          </p>
-
-          <button
-            type="button"
-            className={
-              privacy === 'public'
-                ? 'privacy-card active'
-                : 'privacy-card'
-            }
-            onClick={() => setPrivacy('public')}
-          >
-            <span>
-              <b>ყველამ ნახოს</b>
-              <small>შენი აზრი გამოჩნდება საჯაროდ</small>
-            </span>
-
-            <span
-              className={
-                privacy === 'public'
-                  ? 'circle active-circle'
-                  : 'circle'
-              }
-            ></span>
-          </button>
-
-          <button
-            type="button"
-            className={
-              privacy === 'similar'
-                ? 'privacy-card active'
-                : 'privacy-card'
-            }
-            onClick={() => setPrivacy('similar')}
-          >
-            <span>
-              <b>მხოლოდ მსგავსმა ნახოს</b>
-              <small>AI მხოლოდ მსგავს ადამიანებს აჩვენებს</small>
-            </span>
-
-            <span
-              className={
-                privacy === 'similar'
-                  ? 'circle active-circle'
-                  : 'circle'
-              }
-            ></span>
-          </button>
-        </div>
 
         <button
           type="button"
           className="main-btn"
           onClick={handleMatch}
         >
-          მოძებნე Match
+          ვნახოთ ვინ ფიქრობს შენნაირად
         </button>
 
         {message && (
@@ -143,7 +90,7 @@ function App() {
         )}
 
         <p className="note">
-          სხვის აზრებს ნახავ მხოლოდ შენი აზრის დაწერის შემდეგ.
+          სხვის აზრებს მხოლოდ მაშინ ნახავ, როცა შენც დაწერ.
         </p>
       </div>
     </div>
