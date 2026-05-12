@@ -19,6 +19,12 @@ function App() {
     }
 
     setMessage('Match იძებნება...');
+    let userId = localStorage.getItem('rame_user_id');
+
+if (!userId) {
+  userId = crypto.randomUUID();
+  localStorage.setItem('rame_user_id', userId);
+}
 
     try {
       const response = await fetch(
@@ -29,10 +35,11 @@ function App() {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            thought,
-            instagram,
-            visibility: 'similar_only'
-          })
+  userId,
+  thought,
+  instagram,
+  visibility: 'similar_only'
+})
         }
       );
 
