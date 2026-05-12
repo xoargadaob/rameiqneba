@@ -31,7 +31,7 @@ function App() {
       <div className="card">
         <div className="badge">● AI Match</div>
 
-        <h1>GMatch</h1>
+        <h1>რამე იქნება</h1>
         <p className="subtitle">დაწერე აზრი და იპოვე მსგავსი ადამიანი</p>
 
         <textarea
