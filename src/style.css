@@ -43,28 +43,64 @@ body {
 }
 
 .animated-title {
+  min-height: 70px;
+  margin: 18px 0 10px;
+}
+
+.typing-text::after {
+  content: "რამე იქნება";
   font-size: clamp(38px, 11vw, 56px);
   font-weight: 900;
-  margin: 18px 0 10px;
-  line-height: 1;
+  color: white;
+  border-right: 3px solid #7c3aed;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+  width: 0;
+  animation:
+    typingCycle 10s steps(20) infinite,
+    cursorBlink 1s infinite;
 }
 
-.cursor {
-  color: #7c3aed;
-  animation: blinkCursor 1s infinite;
-}
-
-@keyframes blinkCursor {
+@keyframes typingCycle {
   0% {
-    opacity: 1;
+    content: "რამე იქნება";
+    width: 0;
+  }
+
+  15% {
+    width: 11ch;
+  }
+
+  35% {
+    width: 11ch;
   }
 
   50% {
-    opacity: 0;
+    width: 0;
+  }
+
+  51% {
+    content: "რამე მოხდება";
+    width: 0;
+  }
+
+  66% {
+    width: 12ch;
+  }
+
+  86% {
+    width: 12ch;
   }
 
   100% {
-    opacity: 1;
+    width: 0;
+  }
+}
+
+@keyframes cursorBlink {
+  50% {
+    border-color: transparent;
   }
 }
 
