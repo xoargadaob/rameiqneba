@@ -6,17 +6,17 @@ function App() {
   const [thought, setThought] = useState('');
   const [instagram, setInstagram] = useState('');
   const [message, setMessage] = useState('');
-  const [match, setMatch] = useState(null);
+  const [matches, setMatches] = useState([]);
 
   async function handleMatch() {
     if (!thought.trim()) {
       setMessage('ჯერ აზრი დაწერე');
-      setMatch(null);
+      setMatches([]);
       return;
     }
 
     setMessage('Match იძებნება...');
-    setMatch(null);
+    setMatches([]);
 
     let userId = localStorage.getItem('rame_user_id');
 
@@ -50,17 +50,20 @@ function App() {
       }
 
       if (data.matches && data.matches.length > 0) {
-        const foundMatch = data.matches[0];
-        const percent = Math.round(foundMatch.score * 100);
+        const foundMatches = data.matches.map((item) => ({
+          ...item,
+          percent: Math.round(item.score * 100)
+        }));
 
-        setMatch({
-          ...foundMatch,
-          percent
-        });
+        setMatches(foundMatches);
 
-        setMessage(`ნაპოვნია მსგავსი ადამიანი • ${percent}% Match`);
+        setMessage(
+          `ნაპოვნია ${foundMatches.length} მსგავსი აზრი`
+        );
       } else {
-        setMessage('ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅');
+        setMessage(
+          'ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅'
+        );
       }
     } catch (error) {
       setMessage('დაფიქსირდა შეცდომა');
@@ -110,42 +113,61 @@ function App() {
           </div>
         )}
 
-        {match && (
-          <div className="match-card">
-            <div className="match-top">
-              <span className="match-pill">{match.percent}% Match</span>
-              <span className="match-dot"></span>
-            </div>
-
-            <p className="match-label">მსგავსი აზრი</p>
-
-            <p className="match-thought">
-              “{match.thought}”
-            </p>
-
-            {match.instagram ? (
-              <a
-                href={`https://instagram.com/${cleanInstagram(match.instagram)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="instagram-link"
+        {matches.length > 0 && (
+          <div className="matches-list">
+            {matches.map((match) => (
+              <div
+                className="match-card"
+                key={match._id}
               >
-                Instagram-ზე გადასვლა @{cleanInstagram(match.instagram)}
-              </a>
-            ) : (
-              <p className="no-instagram">
-                ამ ადამიანს Instagram არ აქვს მითითებული
-              </p>
-            )}
+                <div className="match-top">
+                  <span className="match-pill">
+                    {match.percent}% Match
+                  </span>
+
+                  <span className="match-dot"></span>
+                </div>
+
+                <p className="match-label">
+                  მსგავსი აზრი
+                </p>
+
+                <p className="match-thought">
+                  “{match.thought}”
+                </p>
+
+                {match.instagram ? (
+                  <a
+                    href={`https://instagram.com/${cleanInstagram(
+                      match.instagram
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="instagram-link"
+                  >
+                    Instagram-ზე გადასვლა @
+                    {cleanInstagram(match.instagram)}
+                  </a>
+                ) : (
+                  <p className="no-instagram">
+                    ამ ადამიანს Instagram არ აქვს
+                    მითითებული
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
         <p className="note">
-          სხვის აზრებს მხოლოდ მაშინ ნახავ, როცა შენც დაწერ.
+          სხვის აზრებს მხოლოდ მაშინ ნახავ,
+          როცა შენც დაწერ.
         </p>
       </div>
     </div>
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(
+  <App />
+);
