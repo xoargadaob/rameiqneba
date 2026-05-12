@@ -31,7 +31,7 @@ function App() {
     }
 
     try {
-      const response = await fetch(`$https://rameiqneba.onrender.com/api/posts`, {
+      const response = await fetch(`https://rameiqneba.onrender.com/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
