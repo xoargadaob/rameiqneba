@@ -35,7 +35,6 @@ function App() {
           visibility: privacy
         })
       }
-    );
 
     const data = await response.json();
 
