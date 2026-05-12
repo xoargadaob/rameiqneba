@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-const API_URL = 'https://rameiqneba.onrender.com/api/thoughts/match';
+const API_URL = 'https://rameiqneba.onrender.com/';
 
 function App() {
   const [text, setText] = useState('');
