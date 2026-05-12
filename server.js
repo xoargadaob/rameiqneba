@@ -3,7 +3,6 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -11,12 +10,8 @@ app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch((error) => {
-    console.log('MongoDB error:', error);
-  });
+  .then(() => console.log('MongoDB connected'))
+  .catch((error) => console.log('MongoDB error:', error));
 
 const ThoughtSchema = new mongoose.Schema({
   userId: String,
@@ -32,6 +27,24 @@ const ThoughtSchema = new mongoose.Schema({
 
 const Thought = mongoose.model('Thought', ThoughtSchema);
 
+function similarity(a, b) {
+  const wordsA = a.toLowerCase().trim().split(/\s+/);
+  const wordsB = b.toLowerCase().trim().split(/\s+/);
+
+  const setA = new Set(wordsA);
+  const setB = new Set(wordsB);
+
+  let same = 0;
+
+  setA.forEach((word) => {
+    if (setB.has(word)) {
+      same++;
+    }
+  });
+
+  return same / Math.max(setA.size, setB.size);
+}
+
 app.get('/', (req, res) => {
   res.json({
     message: 'რამე იქნება API მუშაობს 🚀'
@@ -40,12 +53,7 @@ app.get('/', (req, res) => {
 
 app.post('/api/thoughts/match', async (req, res) => {
   try {
-    const {
-      userId,
-      thought,
-      instagram,
-      visibility
-    } = req.body;
+    const { userId, thought, instagram, visibility } = req.body;
 
     if (!thought) {
       return res.status(400).json({
@@ -53,9 +61,7 @@ app.post('/api/thoughts/match', async (req, res) => {
       });
     }
 
-    const normalizedThought = thought
-      .toLowerCase()
-      .trim();
+    const normalizedThought = thought.toLowerCase().trim();
 
     const alreadyExists = await Thought.findOne({
       userId,
@@ -68,12 +74,22 @@ app.post('/api/thoughts/match', async (req, res) => {
       });
     }
 
-    const matches = await Thought.find({
-      normalizedThought: {
-        $regex: normalizedThought,
-        $options: 'i'
-      }
-    }).limit(5);
+    const allThoughts = await Thought.find({
+      userId: { $ne: userId }
+    });
+
+    const matches = allThoughts
+      .map((item) => {
+        const score = similarity(thought, item.thought);
+
+        return {
+          ...item.toObject(),
+          score
+        };
+      })
+      .filter((item) => item.score > 0.3)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 5);
 
     const savedThought = await Thought.create({
       userId,
