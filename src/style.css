@@ -59,8 +59,8 @@ body {
   width: 0;
   border-right: 3px solid #7c3aed;
   animation:
-    typing1 4s steps(14) infinite,
-    blink .7s infinite;
+    typing1 10s steps(20) infinite,
+    blink 1s step-end infinite;
 }
 
 @keyframes typing1 {
@@ -69,28 +69,28 @@ body {
     width: 0;
   }
 
-  20% {
+  15% {
     width: 11ch;
   }
 
-  40% {
+  35% {
     width: 11ch;
   }
 
-  55% {
+  45% {
     width: 0;
   }
 
-  56% {
+  46% {
     content: "რამე მოხდება";
     width: 0;
   }
 
-  75% {
+  60% {
     width: 12ch;
   }
 
-  95% {
+  80% {
     width: 12ch;
   }
 
