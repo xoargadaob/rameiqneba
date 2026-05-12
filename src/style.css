@@ -163,57 +163,49 @@ small {
   text-align: center;
   font-size: 14px;
 }
-.animated-title {
-  position: relative;
-  height: 70px;
-  overflow: hidden;
-  margin: 18px 0 8px;
-}
-
-.animated-title span {
-  position: absolute;
-  left: 0;
-  right: 0;
+.animated-title::after {
+  content: "რამე იქნება";
   font-size: 52px;
   font-weight: 900;
-  animation: switchText 9s infinite;
-  opacity: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid #7c3aed;
+  display: inline-block;
+  width: 0;
+  animation: typingCycle 8s infinite;
 }
 
-.animated-title span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.animated-title span:nth-child(2) {
-  animation-delay: 3s;
-}
-
-.animated-title span:nth-child(3) {
-  animation-delay: 6s;
-}
-
-@keyframes switchText {
+@keyframes typingCycle {
   0% {
-    opacity: 0;
-    transform: translateY(20px);
+    content: "რამე იქნება";
+    width: 0;
   }
 
-  10% {
-    opacity: 1;
-    transform: translateY(0);
+  15% {
+    width: 11ch;
   }
 
-  30% {
-    opacity: 1;
-    transform: translateY(0);
+  35% {
+    width: 11ch;
   }
 
-  40% {
-    opacity: 0;
-    transform: translateY(-20px);
+  50% {
+    width: 0;
+  }
+
+  51% {
+    content: "რამე მოხდება";
+  }
+
+  65% {
+    width: 12ch;
+  }
+
+  85% {
+    width: 12ch;
   }
 
   100% {
-    opacity: 0;
+    width: 0;
   }
 }
