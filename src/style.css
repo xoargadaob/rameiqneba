@@ -58,8 +58,8 @@ body {
   display: inline-block;
   width: 0;
   animation:
-    typingOne 5s steps(11) infinite,
-    textSwap 10s infinite,
+    typingOne 4s steps(11) infinite,
+    textSwap 8s infinite,
     cursorBlink 0.8s infinite;
 }
 
@@ -68,16 +68,12 @@ body {
     width: 0;
   }
 
-  25% {
+  20% {
     width: 11ch;
   }
 
-  45% {
+  65% {
     width: 11ch;
-  }
-
-  50% {
-    width: 0;
   }
 
   100% {
