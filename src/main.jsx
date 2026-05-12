@@ -52,7 +52,7 @@ function App() {
         if (match.instagram) {
           setMessage(`ნაპოვნია მსგავსი ადამიანი: @${match.instagram}`);
         } else {
-          setMessage('ნაპოვნია მსგავსი ადამიანი, მაგრამ Instagram არ აქვს მითითებული');
+          setMessage('ნაპოვნია მსგავსი ადამიანი');
         }
       } else {
         setMessage('ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅');
@@ -67,8 +67,8 @@ function App() {
       <div className="card">
         <div className="badge">● რამე იქნება AI</div>
 
-        <h1 className="animated-title">
-          
+        <h1 className="animated-title"></h1>
+
         <p className="subtitle">
           დაწერე რაც ფიქრობ. იქნებ მარტო არ ხარ.
         </p>
