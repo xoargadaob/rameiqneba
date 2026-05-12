@@ -58,21 +58,21 @@ body {
   display: inline-block;
   width: 0;
   animation:
-    typingCycle 10s steps(20) infinite,
-    cursorBlink 1s infinite;
+    typingOne 5s steps(11) infinite,
+    textSwap 10s infinite,
+    cursorBlink 0.8s infinite;
 }
 
-@keyframes typingCycle {
+@keyframes typingOne {
   0% {
-    content: "რამე იქნება";
     width: 0;
   }
 
-  15% {
+  25% {
     width: 11ch;
   }
 
-  35% {
+  45% {
     width: 11ch;
   }
 
@@ -80,21 +80,18 @@ body {
     width: 0;
   }
 
-  51% {
-    content: "რამე მოხდება";
-    width: 0;
-  }
-
-  66% {
-    width: 12ch;
-  }
-
-  86% {
-    width: 12ch;
-  }
-
   100% {
     width: 0;
+  }
+}
+
+@keyframes textSwap {
+  0%, 49.9% {
+    content: "რამე იქნება";
+  }
+
+  50%, 100% {
+    content: "რამე მოხდება";
   }
 }
 
