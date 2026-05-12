@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -10,8 +11,12 @@ app.use(express.json());
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((error) => console.log('MongoDB error:', error));
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .catch((error) => {
+    console.log('MongoDB error:', error);
+  });
 
 const ThoughtSchema = new mongoose.Schema({
   thought: String,
@@ -26,7 +31,9 @@ const ThoughtSchema = new mongoose.Schema({
 const Thought = mongoose.model('Thought', ThoughtSchema);
 
 app.get('/', (req, res) => {
-  res.json({ message: 'რამე იქნება API მუშაობს 🚀' });
+  res.json({
+    message: 'რამე იქნება API მუშაობს 🚀'
+  });
 });
 
 app.post('/api/thoughts/match', async (req, res) => {
@@ -34,11 +41,16 @@ app.post('/api/thoughts/match', async (req, res) => {
     const { thought, instagram, visibility } = req.body;
 
     if (!thought || !instagram) {
-      return res.status(400).json({ error: 'აზრი და Instagram აუცილებელია' });
+      return res.status(400).json({
+        error: 'აზრი და Instagram აუცილებელია'
+      });
     }
 
     const matches = await Thought.find({
-      thought: { $regex: thought, $options: 'i' }
+      thought: {
+        $regex: thought,
+        $options: 'i'
+      }
     }).limit(5);
 
     const savedThought = await Thought.create({
@@ -53,16 +65,25 @@ app.post('/api/thoughts/match', async (req, res) => {
       matches
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    console.log(error);
+
+    res.status(500).json({
+      error: 'Server error'
+    });
   }
 });
 
 app.get('/api/thoughts', async (req, res) => {
   try {
-    const thoughts = await Thought.find().sort({ createdAt: -1 });
+    const thoughts = await Thought.find().sort({
+      createdAt: -1
+    });
+
     res.json(thoughts);
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({
+      error: 'Server error'
+    });
   }
 });
 
