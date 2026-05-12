@@ -6,14 +6,17 @@ function App() {
   const [thought, setThought] = useState('');
   const [instagram, setInstagram] = useState('');
   const [message, setMessage] = useState('');
+  const [match, setMatch] = useState(null);
 
   async function handleMatch() {
     if (!thought.trim()) {
       setMessage('ჯერ აზრი დაწერე');
+      setMatch(null);
       return;
     }
 
     setMessage('Match იძებნება...');
+    setMatch(null);
 
     let userId = localStorage.getItem('rame_user_id');
 
@@ -47,20 +50,25 @@ function App() {
       }
 
       if (data.matches && data.matches.length > 0) {
-        const match = data.matches[0];
-        const percent = Math.round(match.score * 100);
+        const foundMatch = data.matches[0];
+        const percent = Math.round(foundMatch.score * 100);
 
-        if (match.instagram) {
-          setMessage(`@${match.instagram} • ${percent}% Match`);
-        } else {
-          setMessage(`ნაპოვნია მსგავსი ადამიანი • ${percent}% Match`);
-        }
+        setMatch({
+          ...foundMatch,
+          percent
+        });
+
+        setMessage(`ნაპოვნია მსგავსი ადამიანი • ${percent}% Match`);
       } else {
         setMessage('ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅');
       }
     } catch (error) {
       setMessage('დაფიქსირდა შეცდომა');
     }
+  }
+
+  function cleanInstagram(username) {
+    return username.replace('@', '').trim();
   }
 
   return (
@@ -99,6 +107,36 @@ function App() {
         {message && (
           <div className="result">
             {message}
+          </div>
+        )}
+
+        {match && (
+          <div className="match-card">
+            <div className="match-top">
+              <span className="match-pill">{match.percent}% Match</span>
+              <span className="match-dot"></span>
+            </div>
+
+            <p className="match-label">მსგავსი აზრი</p>
+
+            <p className="match-thought">
+              “{match.thought}”
+            </p>
+
+            {match.instagram ? (
+              <a
+                href={`https://instagram.com/${cleanInstagram(match.instagram)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="instagram-link"
+              >
+                Instagram-ზე გადასვლა @{cleanInstagram(match.instagram)}
+              </a>
+            ) : (
+              <p className="no-instagram">
+                ამ ადამიანს Instagram არ აქვს მითითებული
+              </p>
+            )}
           </div>
         )}
 
