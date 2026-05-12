@@ -73,20 +73,6 @@ app.post('/api/thoughts/match', async (req, res) => {
   }
 });
 
-app.get('/api/thoughts', async (req, res) => {
-  try {
-    const thoughts = await Thought.find().sort({
-      createdAt: -1
-    });
-
-    res.json(thoughts);
-  } catch (error) {
-    res.status(500).json({
-      error: 'Server error'
-    });
-  }
-});
-
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
