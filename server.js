@@ -13,103 +13,93 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((error) => console.log('MongoDB error:', error));
 
-const ThoughtSchema = new mongoose.Schema({
-  userId: String,
-  thought: String,
-  normalizedThought: String,
-  instagram: String,
-  visibility: String,
+const CommentSchema = new mongoose.Schema({
+  text: String,
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-const Thought = mongoose.model('Thought', ThoughtSchema);
-
-function similarity(a, b) {
-  const wordsA = a.toLowerCase().trim().split(/\s+/);
-  const wordsB = b.toLowerCase().trim().split(/\s+/);
-
-  const setA = new Set(wordsA);
-  const setB = new Set(wordsB);
-
-  let same = 0;
-
-  setA.forEach((word) => {
-    if (setB.has(word)) {
-      same++;
-    }
-  });
-
-  return same / Math.max(setA.size, setB.size);
-}
-
-app.get('/', (req, res) => {
-  res.json({
-    message: 'რამე იქნება API მუშაობს 🚀'
-  });
+const PostSchema = new mongoose.Schema({
+  text: String,
+  likes: {
+    type: Number,
+    default: 0
+  },
+  comments: [CommentSchema],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-app.post('/api/thoughts/match', async (req, res) => {
+const Post = mongoose.model('Post', PostSchema);
+
+app.get('/', (req, res) => {
+  res.json({ message: 'რამე იქნება API მუშაობს 🚀' });
+});
+
+app.get('/api/posts', async (req, res) => {
   try {
-    const { userId, thought, instagram, visibility } = req.body;
-
-    if (!thought) {
-      return res.status(400).json({
-        error: 'აზრი აუცილებელია'
-      });
-    }
-
-    const normalizedThought = thought.toLowerCase().trim();
-
-    const alreadyExists = await Thought.findOne({
-      userId,
-      normalizedThought
-    });
-
-    if (alreadyExists) {
-      return res.status(409).json({
-        error: 'ეს აზრი უკვე დაწერილი გაქვს'
-      });
-    }
-
-    const allThoughts = await Thought.find({
-      userId: { $ne: userId }
-    });
-
-    const matches = allThoughts
-      .map((item) => {
-        const score = similarity(thought, item.thought);
-
-        return {
-          ...item.toObject(),
-          score
-        };
-      })
-      .filter((item) => item.score > 0.3)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 5);
-
-    const savedThought = await Thought.create({
-      userId,
-      thought,
-      normalizedThought,
-      instagram,
-      visibility
-    });
-
-    res.json({
-      success: true,
-      savedThought,
-      matches
-    });
+    const posts = await Post.find().sort({ createdAt: -1 });
+    res.json(posts);
   } catch (error) {
-    console.log(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
-    res.status(500).json({
-      error: 'Server error'
+app.post('/api/posts', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'აზრი აუცილებელია' });
+    }
+
+    const post = await Post.create({
+      text: text.trim()
     });
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/posts/:id/like', async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.post('/api/posts/:id/comments', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({ error: 'კომენტარი ცარიელია' });
+    }
+
+    const post = await Post.findById(req.params.id);
+
+    post.comments.push({
+      text: text.trim()
+    });
+
+    await post.save();
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
