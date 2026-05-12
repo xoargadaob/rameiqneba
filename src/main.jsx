@@ -68,8 +68,8 @@ function App() {
         <div className="badge">● რამე იქნება AI</div>
 
           <h1 className="animated-title">
-  რამე იქნება<span className="cursor">|</span>
-       </h1>
+  <span className="typing-text"></span>
+</h1>
         
         <p className="subtitle">
           დაწერე რას ფიქრობ. იქნებ მარტო არ ხარ.
