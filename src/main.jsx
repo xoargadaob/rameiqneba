@@ -8,16 +8,50 @@ function App() {
   const [privacy, setPrivacy] = useState('public');
   const [message, setMessage] = useState('');
 
-  function handleMatch() {
-    if (!thought.trim()) {
-      setMessage('ჯერ აზრი დაწერე');
-      return;
-    }
+  async function handleMatch() {
+  if (!thought.trim()) {
+    setMessage('ჯერ აზრი დაწერე');
+    return;
+  }
 
-    if (!instagram.trim()) {
-      setMessage('ჯერ Instagram ჩაწერე');
-      return;
+  if (!instagram.trim()) {
+    setMessage('ჯერ Instagram ჩაწერე');
+    return;
+  }
+
+  setMessage('Match იძებნება...');
+
+  try {
+    const response = await fetch(
+      'https://rameiqneba.onrender.com/api/thoughts/match',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          thought,
+          instagram,
+          visibility: privacy
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.matches && data.matches.length > 0) {
+      setMessage(
+        `ნაპოვნია მსგავსი ადამიანი: @${data.matches[0].instagram}`
+      );
+    } else {
+      setMessage(
+        'ჯერ მსგავსი აზრი ვერ ვიპოვეთ. შენი აზრი შევინახეთ ✅'
+      );
     }
+  } catch (error) {
+    setMessage('დაფიქსირდა შეცდომა');
+  }
+}
 
     setMessage('Match იძებნება...');
 
