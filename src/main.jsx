@@ -67,8 +67,8 @@ function App() {
       <div className="card">
         <div className="badge">● რამე იქნება AI</div>
 
-          <h1 className="animated-title">
-  <span className="typing-text"></span>
+         <h1 className="animated-title">
+  რამე იქნება<span className="cursor">|</span>
 </h1>
         
         <p className="subtitle">
