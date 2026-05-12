@@ -95,3 +95,12 @@ small {
   text-align: center;
   margin-top: 18px;
 }
+.result {
+  margin-top: 16px;
+  background: #18181b;
+  border: 1px solid #7c3aed;
+  color: white;
+  border-radius: 20px;
+  padding: 14px;
+  text-align: center;
+}
