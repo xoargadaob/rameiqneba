@@ -70,7 +70,6 @@ function App() {
         <h1 className="animated-title">
   <span>რამე იქნება</span>
   <span>რამე მოხდება</span>
-  <span><3</span>
 </h1>
 
         <p className="subtitle">
