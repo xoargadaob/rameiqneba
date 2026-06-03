@@ -1,12 +1,443 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>რამე იქნება</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./src/main.jsx"></script>
-  </body>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="theme-color" content="#050505">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon.png">
+    
+    <title>რამეიქნება.გე - იდეების გენერატორი</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Georgian:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.web-fonts.ge/fonts/bpg-nateli/css/bpg-nateli.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"BPG Nateli"', 'sans-serif'], logo: ['"Noto Serif Georgian"', 'serif'] },
+                    colors: { rosegold: { DEFAULT: '#ffb6c1', light: '#ffe4e1', dark: '#c71585' }, crimson: { DEFAULT: '#ff003c', glow: '#ff4d79' } },
+                    animation: { blob: "blob 15s infinite alternate ease-in-out", float: "float 6s ease-in-out infinite", pulseGlow: "pulseGlow 2s infinite alternate ease-in-out" },
+                    keyframes: {
+                        blob: { "0%": { transform: "translate(0px, 0px) scale(1)" }, "33%": { transform: "translate(40px, -60px) scale(1.1)" }, "66%": { transform: "translate(-30px, 30px) scale(0.9)" }, "100%": { transform: "translate(0px, 0px) scale(1)" } },
+                        float: { "0%, 100%": { transform: "translateY(0)" }, "50%": { transform: "translateY(-10px)" } },
+                        pulseGlow: { "0%": { boxShadow: "0 0 15px rgba(255, 0, 60, 0.4)" }, "100%": { boxShadow: "0 0 35px rgba(255, 182, 193, 0.6)" } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; overflow-x: hidden; color: white; -webkit-font-smoothing: antialiased; }
+        .bg-noise { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+        @keyframes neon-flicker { 0%, 20% { text-shadow: 0 0 5px rgba(255,182,193,0.6), 0 0 15px rgba(255,182,193,0.4), 0 0 30px rgba(255,0,60,0.5), 0 0 50px rgba(255,0,60,0.3); opacity: 1; } 21%, 23% { text-shadow: none; opacity: 0.2; } 22%, 24% { text-shadow: 0 0 5px rgba(255,182,193,0.6), 0 0 15px rgba(255,182,193,0.4), 0 0 30px rgba(255,0,60,0.5), 0 0 50px rgba(255,0,60,0.3); opacity: 1; } 25%, 50% { text-shadow: 0 0 5px rgba(255,182,193,0.6), 0 0 15px rgba(255,182,193,0.4), 0 0 30px rgba(255,0,60,0.5), 0 0 50px rgba(255,0,60,0.3); opacity: 1; } 51%, 65% { text-shadow: none; opacity: 0.15; } 75%, 100% { text-shadow: 0 0 5px rgba(255,182,193,0.6), 0 0 15px rgba(255,182,193,0.4), 0 0 30px rgba(255,0,60,0.5), 0 0 50px rgba(255,0,60,0.3); opacity: 1; } }
+        .neon-flicker { animation: neon-flicker 7s infinite linear; }
+        .rolling-text { animation: textRoll 0.15s linear infinite; filter: blur(1.5px); }
+        @keyframes textRoll { 0% { transform: translateY(-5px); opacity: 0.2; } 50% { transform: translateY(5px); opacity: 0.8; } 100% { transform: translateY(-5px); opacity: 0.2; } }
+        .pop-in { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.95) translateY(10px); opacity: 0; filter: blur(4px); } 100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); } }
+        .streak-pop { animation: streakPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes streakPop { 0% { transform: scale(1); } 50% { transform: scale(1.4); color: #ff003c; text-shadow: 0 0 15px #ff003c; } 100% { transform: scale(1); } }
+        .glass-panel { background: linear-gradient(135deg, rgba(20, 0, 0, 0.8) 0%, rgba(5, 5, 5, 0.95) 100%); backdrop-filter: blur(20px); border: 1px solid rgba(255, 182, 193, 0.15); box-shadow: 0 20px 50px rgba(0, 0, 0, 1), inset 0 1px 1px rgba(255, 182, 193, 0.05); }
+        .inner-screen { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 0, 60, 0.15); box-shadow: inset 0 0 40px rgba(255, 0, 60, 0.03); transition: all 0.5s ease; }
+        .btn-gradient { background: linear-gradient(90deg, #ff003c, #c71585, #ff003c); background-size: 200% auto; transition: 0.5s; }
+        .btn-gradient:hover { background-position: right center; }
+        .neon-tab { color: rgba(255, 255, 255, 0.65); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-bottom: 2px solid transparent; padding-bottom: 4px; padding-inline: 0px; white-space: nowrap; cursor: pointer; }
+        .neon-tab:hover { color: #ffffff; transform: translateY(-1px); }
+        .neon-tab.active { color: #ffb6c1; border-bottom: 2px solid #ff003c; text-shadow: 0 0 10px rgba(255, 0, 60, 0.5); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 relative selection:bg-crimson selection:text-white font-sans">
+
+    <div class="bg-noise"></div>
+    <div class="absolute top-1/4 -left-10 w-[30rem] h-[30rem] bg-crimson rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob pointer-events-none"></div>
+    <div class="absolute bottom-1/4 -right-10 w-[30rem] h-[30rem] bg-rosegold-dark rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob pointer-events-none" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-rosegold rounded-full mix-blend-screen filter blur-[150px] opacity-5 pointer-events-none"></div>
+
+    <div id="streak-widget" class="absolute top-4 right-4 md:top-8 md:right-8 glass-panel px-4 py-2 md:px-5 md:py-2.5 rounded-full flex items-center gap-2 md:gap-2.5 border border-white/20 z-50 cursor-default transition-all duration-300 shadow-[0_0_15px_rgba(255,182,193,0.1)]">
+        <i id="streak-icon" class="fa-solid fa-fire text-rosegold/80 text-base md:text-lg"></i>
+        <span class="font-sans text-[11px] md:text-xs font-bold tracking-[0.15em] uppercase text-white/95 flex items-center">
+            სთრიქი: <span id="streak-count" class="text-rosegold ml-1.5 inline-block text-sm md:text-base drop-shadow-[0_0_8px_rgba(255,182,193,0.5)]">0</span>
+        </span>
+    </div>
+
+    <main class="z-10 text-center w-full max-w-xl relative animate-float mt-14 md:mt-0">
+        
+        <header class="mb-10 mt-4 md:mt-0">
+            <h1 class="font-logo text-5xl md:text-7xl font-black mb-1 uppercase tracking-tighter">
+                <span class="text-white drop-shadow-md">რამე</span><span class="text-rosegold neon-flicker">იქნება</span><span class="text-crimson/80 text-4xl drop-shadow-md">.გე</span>
+            </h1>
+            <p class="font-sans text-[14px] sm:text-[16px] md:text-[20px] text-rosegold-light/90 font-bold tracking-[0.15em] uppercase mt-4 drop-shadow-[0_0_8px_rgba(255,182,193,0.4)]">
+                სპონტანური გეგმების გენერატორი
+            </p>
+        </header>
+
+        <section class="glass-panel rounded-[2rem] p-5 md:p-10 relative overflow-hidden">
+            
+            <nav class="flex flex-row justify-center items-center gap-3 sm:gap-6 md:gap-8 mb-8 text-[15px] sm:text-[17px] md:text-[20px] font-bold uppercase tracking-tighter border-b border-white/10 pb-3 w-full px-0" aria-label="კატეგორიების არჩევა">
+                <button onclick="setCategory('all')" id="btn-all" class="neon-tab active">ყველა</button>
+                <button onclick="setCategory('eat')" id="btn-eat" class="neon-tab">ჭამა</button>
+                <button onclick="setCategory('fun')" id="btn-fun" class="neon-tab">გართობა</button>
+                <button onclick="setCategory('watch')" id="btn-watch" class="neon-tab">ნახვა</button>
+                <button onclick="setCategory('message')" id="btn-message" class="neon-tab">მიწერე</button>
+            </nav>
+
+            <div id="result-container" class="inner-screen rounded-2xl min-h-[16rem] md:min-h-[18rem] flex flex-col items-center justify-center p-8 relative overflow-hidden mb-10 group" aria-live="polite">
+                
+                <span id="result-label" class="font-sans text-[12px] md:text-[14px] font-bold text-crimson/80 mb-6 uppercase tracking-[0.3em] opacity-0 transition-opacity duration-300 z-10">
+                    კატეგორია
+                </span>
+
+                <div id="icon-wrapper" class="mb-6 z-10 transition-transform duration-500">
+                    <i id="result-icon" class="fa-solid fa-gem text-4xl text-rosegold/30" aria-hidden="true"></i>
+                </div>
+                
+                <span id="result-text" class="font-sans text-2xl md:text-[2rem] font-normal tracking-wide text-white/95 text-center leading-[1.3] z-10 px-2 transition-all">
+                    აირჩიე რამე და დააჭირე ღილაკს
+                </span>
+
+                <div class="absolute bottom-4 right-4 flex gap-3 z-20">
+                    <button onclick="copyResult()" id="copy-btn" aria-label="შედეგის დაკოპირება" class="text-rosegold/40 hover:text-rosegold-light opacity-0 transition-all duration-300 transform translate-y-2 cursor-pointer bg-white/5 w-10 h-10 rounded-full flex items-center justify-center border border-white/10 hover:border-rosegold/50" title="დაკოპირება">
+                        <i class="fa-regular fa-copy text-sm" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="generateIdea()" id="generate-btn" aria-label="იდეის გენერაცია" class="font-sans btn-gradient animate-pulseGlow w-full relative overflow-hidden text-white text-lg md:text-xl font-bold tracking-[0.1em] py-5 md:py-6 rounded-xl transform transition-transform active:scale-95 border border-white/20">
+                <span class="relative z-10 flex items-center justify-center drop-shadow-md">
+                    რა ვქნათ დღეს? <i class="fa-solid fa-fire ml-3 text-yellow-300/90 text-lg" aria-hidden="true"></i>
+                </span>
+            </button>
+        </section>
+        
+        <footer class="font-sans mt-8 text-[11px] text-rosegold/30 font-semibold tracking-[0.4em] uppercase mb-4">
+            &copy; 2026 RAMEIQNEBA.GE
+        </footer>
+    </main>
+
+    <script>
+        // --- 1. State Management (ცენტრალიზებული მონაცემები) ---
+        const appState = {
+            currentCategory: 'all',
+            isGenerating: false,
+            lastResultText: "",
+            clickCounter: 0,
+            historyList: [],
+            MAX_HISTORY: 12
+        };
+
+        const categoryLabels = { eat: "💡 იდეა საჭმელზე", fun: "💡 გართობის იდეა", watch: "💡 რა ვნახოთ", message: "💬 მიწერე მეგობარს", ironic: "👀 სისტემის შეტყობინება", motivational: "🚀 მოტივაცია" };
+        const categoryGlows = { eat: "rgba(255, 0, 60, 0.15)", fun: "rgba(255, 182, 193, 0.15)", watch: "rgba(255, 77, 121, 0.15)", message: "rgba(255, 228, 225, 0.15)", ironic: "rgba(255, 255, 255, 0.15)", motivational: "rgba(96, 165, 250, 0.15)" };
+        let buttonTimeouts = {};
+
+        // --- 2. სისტემის ინიციალიზაცია (LocalStorage Error Handling-ით) ---
+        function initSystem() {
+            const todayDate = new Date();
+            const todayStr = todayDate.toDateString();
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = yesterdayDate.toDateString();
+
+            let streak = 0;
+            let justIncreased = false;
+
+            try {
+                let lastVisit = localStorage.getItem('ri_lastVisit');
+                streak = parseInt(localStorage.getItem('ri_streak')) || 0;
+
+                if (lastVisit === todayStr) {
+                    // უკვე იყო დღეს შემოული
+                } else if (lastVisit === yesterdayStr) {
+                    streak++;
+                    justIncreased = true;
+                } else {
+                    streak = 1;
+                    justIncreased = true;
+                }
+
+                localStorage.setItem('ri_lastVisit', todayStr);
+                localStorage.setItem('ri_streak', streak.toString());
+            } catch (e) {
+                console.warn("LocalStorage is blocked by the browser setting. Streak won't be saved.");
+                streak = 1;
+            }
+
+            const streakCountEl = document.getElementById('streak-count');
+            const streakIconEl = document.getElementById('streak-icon');
+            streakCountEl.innerText = streak;
+
+            if (streak >= 3) {
+                streakIconEl.classList.remove('text-rosegold/80');
+                streakIconEl.classList.add('text-orange-500', 'animate-pulse');
+                document.getElementById('streak-widget').style.boxShadow = '0 0 20px rgba(255, 165, 0, 0.25)';
+                streakCountEl.classList.add('text-orange-400');
+                streakCountEl.classList.remove('text-rosegold');
+            }
+            if (justIncreased) {
+                setTimeout(() => {
+                    streakCountEl.classList.add('streak-pop');
+                    setTimeout(() => streakCountEl.classList.remove('streak-pop'), 600);
+                }, 500);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initSystem);
+
+        // --- 3. ვრცელი იდეების ბაზა ---
+        const ideas = {
+            eat: [
+                { text: "შევუკვეთოთ დიდი პიცა 🍕", icon: "fa-pizza-slice", color: "text-red-500", type: "eat", id: "e1" },
+                { text: "წავიდეთ სახინკლეში 🥟", icon: "fa-plate-wheat", color: "text-rosegold-light", type: "eat", id: "e2" },
+                { text: "შევჭამოთ შაურმა 🌯", icon: "fa-utensils", color: "text-orange-400", type: "eat", id: "e3" },
+                { text: "სუში გამოვიძახოთ 🍣", icon: "fa-fish", color: "text-pink-500", type: "eat", id: "e4" },
+                { text: "მოვამზადოთ რამე სახლში 👨‍🍳", icon: "fa-kitchen-set", color: "text-rosegold", type: "eat", id: "e5" },
+                { text: "წავიდეთ ბურგერებზე 🍔", icon: "fa-burger", color: "text-yellow-400", type: "eat", id: "e6" },
+                { text: "ყავა და დესერტი სადმე ☕", icon: "fa-mug-hot", color: "text-rosegold-dark", type: "eat", id: "e7" },
+                { text: "ჯანსაღად ვჭამოთ (სალათი) 🥗", icon: "fa-leaf", color: "text-green-400", type: "eat", id: "e8" },
+                { text: "აზიური ნუდლსი შევუკვეთოთ 🍜", icon: "fa-bowl-food", color: "text-red-400", type: "eat", id: "e9" },
+                { text: "ღამის 3 საათზე მაცივრის გამოჭამა 🥶", icon: "fa-snowflake", color: "text-blue-300", type: "eat", id: "e10" },
+                { text: "წავიდეთ ბაზარში ცხელი შოთების და ყველის საყიდლად 🧀", icon: "fa-bread-slice", color: "text-yellow-300", type: "eat", id: "e11" },
+                { text: "შევუკვეთოთ ის, რაც ცხოვრებაში არ გაგვისინჯავს 👽", icon: "fa-meteor", color: "text-cyan-400", type: "eat", id: "e13" },
+                { text: "წავიდეთ ნაყინის საჭმელად 🍦", icon: "fa-ice-cream", color: "text-white", type: "eat", id: "e17" },
+                { text: "უბრალოდ ვიყიდოთ ცხელი პური და შევჭამოთ გზაში 🥖", icon: "fa-orange-300", color: "text-orange-300", type: "eat", id: "e24" }
+            ],
+            fun: [
+                { text: "წავიდეთ ბოულინგზე 🎳", icon: "fa-bowling-ball", color: "text-cyan-400", type: "fun", id: "f1" },
+                { text: "ვითამაშოთ სამაგიდო თამაშები 🎲", icon: "fa-dice", color: "text-blue-400", type: "fun", id: "f2" },
+                { text: "წავიდეთ ბარში დასალევად 🍻", icon: "fa-beer-mug-empty", color: "text-yellow-400", type: "fun", id: "f3" },
+                { text: "გავისეირნოთ ქალაქში 🚶‍♂️", icon: "fa-person-walking", color: "text-rosegold", type: "fun", id: "f4" },
+                { text: "ვითამაშოთ ვიდეო თამაშები 🎮", icon: "fa-gamepad", color: "text-indigo-400", type: "fun", id: "f5" },
+                { text: "გავიდეთ ბუნებაში პიკნიკზე 🌳", icon: "fa-tree", color: "text-green-400", type: "fun", id: "f8" },
+                { text: "შენს მეგობარს გადაურიცხე 1 თეთრი და ნახე რას მოგწერს 💸", icon: "fa-money-bill-transfer", color: "text-green-400", type: "fun", id: "f25" },
+                { text: "გამოვიცნოთ გამვლელების პროფესიები შორიდან 🕵️", icon: "fa-user-secret", color: "text-rosegold-light", type: "fun", id: "f13" },
+                { text: "ვითამაშოთ 'მაფია' მხოლოდ ორი კაცით 🕵️‍♂️", icon: "fa-user-ninja", color: "text-red-500", type: "fun", id: "f24" }
+            ],
+            watch: [
+                { text: "ვუყუროთ კარგ კომედიას 😂", icon: "fa-masks-theater", color: "text-yellow-400", type: "watch", id: "w1" },
+                { text: "ჩავრთოთ საშინელებათა ფილმი 👻", icon: "fa-ghost", color: "text-slate-300", type: "watch", id: "w2" },
+                { text: "წავიდეთ კინოში 🍿", icon: "fa-film", color: "text-red-500", type: "watch", id: "w3" },
+                { text: "ვუყუროთ ახალ სერიალს 📺", icon: "fa-tv", color: "text-blue-400", type: "watch", id: "w4" },
+                { text: "ჩავრთოთ 2000-იანების ქართული რეკლამები 📺", icon: "fa-backward-fast", color: "text-rosegold", type: "watch", id: "w7" },
+                { text: "ჩავრთოთ უაზრო ინდური ფილმი და ჩვენით გავახმოვანოთ 🎬", icon: "fa-microphone-alt", color: "text-red-400", type: "watch", id: "w8" },
+                { text: "მარველის ფილმების მარათონი მოვაწყოთ 🦸", icon: "fa-bolt", color: "text-red-500", type: "watch", id: "w22" },
+                { text: "იუთუბის ძებნაში ჩაწერე 'Liminal spaces' და დატკბი უცნაური ნოსტალგიით 🪟", icon: "fa-door-open", color: "text-slate-400", type: "watch", id: "w24" },
+                { text: "იუთუბზე ჩაწერე 'Fractal zoom' და გათიშე ტვინი მომდევნო 10 წუთით 🌀", icon: "fa-hurricane", color: "text-cyan-400", type: "watch", id: "w25" },
+                { text: "იუთუბზე მოძებნე '1920s New York colorized' და იმოგზაურე წარსულში 🕰️", icon: "fa-clock-rotate-left", color: "text-amber-500", type: "watch", id: "w26" },
+                { text: "იუთუბზე ჩაწერე 'I feel fantastic' (თუ არ გეშინია creepy ვიდეოების) 🤖", icon: "fa-robot", color: "text-red-500", type: "watch", id: "w27" },
+                { text: "იუთუბის ძებნაში ჩაწერე 'Star size comparison' და შეიგრძენი რა პატარები ვართ სამყაროში 🌌", icon: "fa-meteor", color: "text-purple-400", type: "watch", id: "w28" },
+                { text: "იუთუბში მოძებნე 'Deep sea creatures' და მიხვდები, რომ უცხოპლანეტელები ჩვენს ოკეანეებში ცხოვრობენ 🦑", icon: "fa-water", color: "text-blue-500", type: "watch", id: "w29" },
+                { text: "იუთუბში ჩაწერე 'Things that shouldn't exist' და გაერკვიე სამყაროს შეცდომებში 🧩", icon: "fa-puzzle-piece", color: "text-orange-400", type: "watch", id: "w30" },
+                { text: "იუთუბზე მოძებნე 'Oddly satisfying videos', გათიშე ტვინი და უბრალოდ უყურე როგორ ჭრიან საპნებს 🧼", icon: "fa-soap", color: "text-pink-300", type: "watch", id: "w31" },
+                { text: "იუთუბზე ჩაწერე 'Most isolated places on earth' და ნახე, როგორ ცხოვრობს ხალხი შუაგულ არაფერში 🏔️", icon: "fa-mountain", color: "text-slate-300", type: "watch", id: "w32" },
+                { text: "იუთუბში მოძებნე 'AI generated commercials'. მოემზადე ყველაზე უცნაური და საშიში სიზმრისთვის 🤖", icon: "fa-brain", color: "text-green-400", type: "watch", id: "w33" },
+                { text: "იუთუბზე ჩაწერე 'Timelapse of the entire universe'. 10 წუთში ნახავ სამყაროს დასაწყისს და დასასრულს ⏳", icon: "fa-hourglass-half", color: "text-yellow-200", type: "watch", id: "w34" }
+            ],
+            message: [
+                { text: '"რას შვრები, ხო ხარ ცოცხალი?" 👀', icon: "fa-mobile-screen", color: "text-sky-400", type: "message", id: "m1" },
+                { text: '"გამოდი, რამე ვქნათ!" 🏃‍♂️', icon: "fa-person-running", color: "text-emerald-400", type: "message", id: "m2" },
+                { text: '"მაგრად მომენატრე!" ❤️', icon: "fa-heart", color: "text-red-500", type: "message", id: "m3" },
+                { text: '"ახლა სადაც ხარ, ფოტო გამომიგზავნე" 📸', icon: "fa-camera", color: "text-cyan-400", type: "message", id: "m4" },
+                { text: '"მზად იყავი, 1 საათში გამოგივლი" 🚗', icon: "fa-car", color: "text-blue-400", type: "message", id: "m6" },
+                { text: '"ჩემი ვალი გაქვს, გახსოვს?" 😂', icon: "fa-face-laugh-squint", color: "text-yellow-400", type: "message", id: "m8" },
+                { text: '"თუ 10 წამში არ მიპასუხებ, შენი ტელეფონი აფეთქდება 💣"', icon: "fa-bomb", color: "text-red-600", type: "message", id: "m16" },
+                { text: "მიწერე მწეველ მეგობარს და დაანებებინე სიგარეტს თავი! თუ გამოგივა, შეგიძლია იამაყო 🚭", icon: "fa-ban-smoking", color: "text-teal-400", type: "message", id: "m17" }
+            ],
+            motivational: [
+                { text: "ეს საიტი 1 ღამეში AI-თ არის დამზადებული. ნუ გაჩერდები, შენც შეგიძლია შექმნა რაღაც! 🚀", icon: "fa-rocket", color: "text-blue-400", type: "motivational", id: "mot1" }
+            ]
+        };
+
+        const ua = navigator.userAgent;
+        let specificDeviceIdeas = [];
+
+        if (/iPhone|iPad|iPod/i.test(ua)) {
+            specificDeviceIdeas = [
+                { text: "AirDrop-ით გაუგზავნე სასაცილო ფოტო ვინმე უცხოს კაფეში 😂", icon: "fa-wifi", color: "text-blue-400", type: "fun", id: "dev_i1" },
+                { text: "Siri-ს კითხე რა გააკეთო დღეს და დაუჯერე 🤖", icon: "fa-microphone", color: "text-purple-400", type: "fun", id: "dev_i2" },
+                { text: "შენი iPhone-ით გადაიღე 0.5x (ფართოკუთხიანი) ფოტო და გაუგზავნე მეგობარს 📸", icon: "fa-camera", color: "text-cyan-400", type: "fun", id: "dev_i3" },
+                { text: "FaceTime-ით დაურეკე ვინმეს, ვისაც წლებია არ ლაპარაკებიხარ 📱", icon: "fa-video", color: "text-green-400", type: "message", id: "dev_i4" },
+                { text: "გახსენი Apple Maps, დაადე თითი რუკას და წადი მანდ! 🗺️", icon: "fa-map-location-dot", color: "text-red-400", type: "fun", id: "dev_i5" },
+                { text: "Find My-ში ნახე სად არიან შენი მეგობრები და მოულოდნელად დაადექი თავზე! 📍", icon: "fa-location-dot", color: "text-green-400", type: "fun", id: "dev_i6" },
+                { text: "შენი iPhone-ის Notes-ში 100 დაუსრულებელი გეგმა გაქვს, ერთი მაინც შეასრულე! 📝", icon: "fa-note-sticky", color: "text-yellow-400", type: "fun", id: "dev_i7" }
+            ];
+        } else if (/Android/i.test(ua)) {
+            specificDeviceIdeas = [
+                { text: "დაუმტკიცე მეგობრებს, რომ შენი Android-ის კამერა ჯობია და წადით ფოტოების გადასაღებად 📸", icon: "fa-camera", color: "text-green-400", type: "fun", id: "dev_a1" },
+                { text: "Google Assistant-ს თხოვე მოგიყვეს ანეკდოტი 🤖", icon: "fa-robot", color: "text-blue-400", type: "fun", id: "dev_a2" },
+                { text: "შენი Android-ის ბატარეა კიდევ დიდხანს გაძლებს, რას ზიხარ სახლში?! გარეთ გადი! 🔋", icon: "fa-battery-full", color: "text-green-500", type: "fun", id: "dev_a3" },
+                { text: "გახსენი Google Maps შენს Android-ზე, დაადე თითი რუკას და წადი მანდ! 🗺️", icon: "fa-map-location-dot", color: "text-red-400", type: "fun", id: "dev_a4" },
+                { text: "Google Photos გაფრთხილებს რომ მეხსიერება ივსება... დაიკიდე, წადი და ახალი ფოტოები გადაიღე! ☁️", icon: "fa-cloud", color: "text-blue-300", type: "fun", id: "dev_a5" },
+                { text: "Android-ის 'Back' ღილაკი ვერ გიშველის, უკვე აქ ხარ! ახლა გარეთ გასვლის დროა 🔙", icon: "fa-arrow-left", color: "text-rosegold", type: "fun", id: "dev_a6" },
+                { text: "Google Maps-ში ნახე მეგობრების გაზიარებული ლოკაცია და მოულოდნელად დაადექი თავზე! 📍", icon: "fa-location-dot", color: "text-green-400", type: "fun", id: "dev_a7" }
+            ];
+        } else {
+            specificDeviceIdeas = [
+                { text: "Alt+Tab-ით გადმოხვედი სამსახურის/სკოლის საქმეებიდან ხომ? 👀 წადი, დაისვენე!", icon: "fa-laptop-code", color: "text-cyan-400", type: "fun", id: "dev_p1" },
+                { text: "მთელი დღეა ეკრანს უყურებ... შეუკვეთე მაინც რამე გემრიელი! 🍕", icon: "fa-pizza-slice", color: "text-red-400", type: "eat", id: "dev_p2" },
+                { text: "კლავიატურაზე ამდენ კაკუნს, წადი სადმე ბუნებაში გაისეირნე 🌳", icon: "fa-leaf", color: "text-green-400", type: "fun", id: "dev_p3" },
+                { text: "მაუსის ტრიალს, მეგობრებს მიწერე და გარეთ გადი! 🖱️", icon: "fa-computer-mouse", color: "text-rosegold-light", type: "message", id: "dev_p4" },
+                { text: "გაასწორე წელი! ეგ 50 ღია Chrome-ის ტაბი მიატოვე და გარეთ გადი 🪑", icon: "fa-chair", color: "text-yellow-400", type: "fun", id: "dev_p5" },
+                { text: "Youtube-ზე ვიდეოების ყურებას, ჯობია მართლა წახვიდე და რამე გემრიელი შეჭამო! 🍔", icon: "fa-burger", color: "text-orange-400", type: "eat", id: "dev_p6" }
+            ];
+        }
+
+        ideas.fun.push(...specificDeviceIdeas.filter(i => i.type === 'fun'));
+        ideas.eat.push(...specificDeviceIdeas.filter(i => i.type === 'eat'));
+        ideas.message.push(...specificDeviceIdeas.filter(i => i.type === 'message'));
+
+        const timeBasedIdeas = [
+            { condition: (h, cat) => (h >= 1 && h <= 5) && (cat === 'eat' || cat === 'all'), generate: (h) => ({ text: `ღამის ${h} საათია... მაცივრის კარის ჭრიალს მთელი კორპუსი გაიგებს! 🤫`, icon: "fa-user-secret", color: "text-slate-400", type: "eat", id: "t_e1" }) },
+            { condition: (h, cat) => (h >= 1 && h <= 5) && (cat === 'message' || cat === 'all'), generate: (h) => ({ text: `"გღვიძავს?" - კლასიკური შეცდომა ღამის ${h} საათზე... გაუშვი! 📱`, icon: "fa-moon", color: "text-rosegold", type: "message", id: "t_m1" }) }
+        ];
+
+        // --- 4. ძირითადი ფუნქციები ---
+        function setCategory(category) {
+            if(appState.isGenerating) return; 
+            appState.currentCategory = category;
+            
+            document.querySelectorAll('.neon-tab').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${category}`).classList.add('active');
+        }
+
+        function getRandomIdea() {
+            if (appState.clickCounter === 15) return { text: "უკვე 15 იდეა გამოტოვე... მგონი სახლში დარჩენა გირჩევნია 🏠", icon: "fa-couch", color: "text-slate-400", type: "ironic", id: "ir1" };
+            if (appState.clickCounter === 25) return { text: "სანამ შენ აქ აკლიკებ, სხვები უკვე ხინკალს ჭამენ 🥟", icon: "fa-face-rolling-eyes", color: "text-rosegold-light", type: "ironic", id: "ir3" };
+            if (appState.clickCounter === 40) return { text: "ამხელა დიზაინი იმისთვის არ შეგვიქმნია, რომ უსასრულოდ აკლიკო... 🥂", icon: "fa-champagne-glasses", color: "text-rosegold", type: "ironic", id: "ir4" };
+
+            const currentHour = new Date().getHours();
+            if (Math.random() < 0.3) {
+                const validTimeIdeas = timeBasedIdeas.filter(rule => rule.condition(currentHour, appState.currentCategory));
+                if (validTimeIdeas.length > 0) {
+                    const timeIdea = validTimeIdeas[Math.floor(Math.random() * validTimeIdeas.length)].generate(currentHour);
+                    if (!appState.historyList.includes(timeIdea.id)) { 
+                        appState.historyList.push(timeIdea.id); 
+                        return timeIdea; 
+                    }
+                }
+            }
+
+            let pool = [];
+            if (appState.currentCategory === 'all') {
+                pool = [...ideas.eat, ...ideas.fun, ...ideas.watch, ...ideas.message, ...ideas.motivational];
+            } else {
+                pool = ideas[appState.currentCategory];
+            }
+
+            let candidate; let attempts = 0;
+            do { 
+                candidate = pool[Math.floor(Math.random() * pool.length)]; 
+                attempts++; 
+            } while (appState.historyList.includes(candidate.id) && attempts < 50);
+            
+            appState.historyList.push(candidate.id); 
+            if (appState.historyList.length > appState.MAX_HISTORY) appState.historyList.shift();
+            
+            return candidate;
+        }
+
+        function generateIdea() {
+            if (appState.isGenerating) return; 
+            appState.isGenerating = true; 
+            appState.clickCounter++;
+
+            const resultContainer = document.getElementById('result-container');
+            const resultText = document.getElementById('result-text');
+            const resultIcon = document.getElementById('result-icon');
+            const iconWrapper = document.getElementById('icon-wrapper');
+            const resultLabel = document.getElementById('result-label');
+            const btn = document.getElementById('generate-btn');
+            const copyBtn = document.getElementById('copy-btn');
+            
+            copyBtn.classList.remove('opacity-100', 'translate-y-0'); copyBtn.classList.add('opacity-0', 'translate-y-2');
+            
+            btn.innerHTML = `<span class="relative z-10 flex items-center justify-center drop-shadow-md">ვფიქრობ... <i class="fa-solid fa-spinner fa-spin ml-3 text-white" aria-hidden="true"></i></span>`;
+            
+            resultLabel.classList.remove('opacity-100'); resultLabel.classList.add('opacity-0');
+            resultText.classList.remove('pop-in', 'text-white/95'); iconWrapper.classList.remove('pop-in');
+            resultText.classList.add('text-crimson', 'rolling-text');
+            resultIcon.className = 'fa-solid fa-sparkles text-5xl text-crimson/80 animate-spin';
+            
+            resultContainer.style.boxShadow = 'inset 0 0 40px rgba(255,0,60,0.1)';
+
+            let counter = 0; const tempTexts = ["ბანქოს ვრევ...", "საათს ვამოწმებ...", "რამე იქნება...", "მზადაა..."];
+            const spinInterval = setInterval(() => { 
+                resultText.innerText = tempTexts[counter % tempTexts.length]; 
+                counter++; 
+            }, 180);
+
+            setTimeout(() => {
+                clearInterval(spinInterval);
+                const finalIdea = getRandomIdea(); 
+                appState.lastResultText = finalIdea.text;
+                
+                resultLabel.innerText = categoryLabels[finalIdea.type];
+                resultLabel.classList.remove('opacity-0'); resultLabel.classList.add('opacity-100');
+                
+                resultText.classList.remove('rolling-text', 'text-crimson'); resultText.classList.add('text-white', 'pop-in');
+                iconWrapper.classList.add('pop-in');
+                
+                resultText.innerText = finalIdea.text;
+                resultIcon.className = `fa-solid ${finalIdea.icon} text-5xl md:text-7xl ${finalIdea.color} drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]`;
+                resultContainer.style.boxShadow = `inset 0 0 80px ${categoryGlows[finalIdea.type]}, inset 0 0 0 1px rgba(255,182,193,0.15)`;
+
+                setTimeout(() => {
+                    copyBtn.classList.remove('opacity-0', 'translate-y-2'); copyBtn.classList.add('opacity-100', 'translate-y-0');
+                }, 200);
+                
+                btn.innerHTML = `<span class="relative z-10 flex items-center justify-center drop-shadow-md">კიდევ ვცადოთ <i class="fa-solid fa-rotate-right ml-3 text-white" aria-hidden="true"></i></span>`;
+                appState.isGenerating = false;
+            }, 1200);
+        }
+
+        function copyResult() {
+            if (!appState.lastResultText) return; 
+            const textToCopy = appState.lastResultText.replace(/['"]/g, '');
+            
+            if(navigator.clipboard && window.isSecureContext) { 
+                navigator.clipboard.writeText(textToCopy).then(() => { showButtonSuccess('copy-btn', 'fa-regular fa-copy'); });
+            } else { 
+                const tempInput = document.createElement('textarea'); 
+                tempInput.value = textToCopy; 
+                document.body.appendChild(tempInput); 
+                tempInput.select(); 
+                document.execCommand('copy'); 
+                document.body.removeChild(tempInput); 
+                showButtonSuccess('copy-btn', 'fa-regular fa-copy'); 
+            }
+        }
+
+        function showButtonSuccess(btnId, originalIconClass) {
+            const btn = document.getElementById(btnId); 
+            if (buttonTimeouts[btnId]) clearTimeout(buttonTimeouts[btnId]);
+            
+            btn.innerHTML = '<i class="fa-solid fa-check text-green-400 text-base" aria-hidden="true"></i>'; 
+            btn.classList.add('border-green-500/50');
+            
+            buttonTimeouts[btnId] = setTimeout(() => { 
+                btn.innerHTML = `<i class="${originalIconClass}" aria-hidden="true"></i>`; 
+                btn.classList.remove('border-green-500/50'); 
+            }, 2000);
+        }
+
+        // --- Service Worker-ის რეგისტრაცია (PWA-სთვის) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('Service Worker დარეგისტრირდა წარმატებით!'))
+                    .catch(err => console.log('Service Worker რეგისტრაციის შეცდომა:', err));
+            });
+        }
+    </script>
+</body>
 </html>
